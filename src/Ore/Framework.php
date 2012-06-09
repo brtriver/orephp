@@ -54,7 +54,7 @@ class Framework
       extract($router->match($request->getPathInfo()), EXTR_SKIP);
       $c = $this->c;
       $controllerFilePath = $this->c['base_dir'] . '/app/controllers/' .$controller . ".php";
-      if (file_exists($this->c['matcher'])) {
+      if (!file_exists($controllerFilePath)) {
         throw new ResourceNotFoundException(sprintf("%s.php is not found", $controller));
       }
       $response = include $controllerFilePath;
