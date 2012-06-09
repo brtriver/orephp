@@ -1,0 +1,17 @@
+{
+  "name": "brtriver/orephp",
+  "require": {
+      "php": ">=5.3.3"
+  },
+  "require": {
+      "symfony/routing": "2.1.*",
+      "symfony/http-foundation": "2.1.*",
+      "symfony/config": "2.1.*",
+      "symfony/yaml": "2.1.*",
+      "pimple/pimple": "dev-master",
+      "twig/twig": "1.8.2"
+  },
+  "autoload": {
+      "psr-0": {"Ore": "src/"}
+  }
+}

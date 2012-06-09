@@ -1,0 +1,6 @@
+hello:
+    pattern: /hello/{name}
+    defaults: { controller: 'hello' }
+default:
+    pattern: /{controller}
+    defaults: { controller: controller }
