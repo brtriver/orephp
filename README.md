@@ -8,7 +8,7 @@ In this controller file, you have to return strings as response data.
 
 Simple and Fast
 ---------------
-Core code is only 74 lines so much fast.
+Core code is only 83 lines so much fast.
 It has DI container(Pimple) and Twig template system.
 It is fit for you developing simple applications.
 
@@ -31,17 +31,22 @@ If you want to change the routing after this routing is cached, you have to remo
 
 Controller file
 ---------------
-Controller file is plain php file and you have to return Response strings with return like below:
+Controller file is php file having closure function and you have to return Response strings with return like below:
 
     <?php
-    $now = date('Y-m-d');
-    return "This is {$now}";
+    return function($request, $params, $container) {
+        $now = date('Y-m-d H:i:s');
+        return "Hello world " . $params['name'];
+    };
 
-If you want to use Twig as a template engine, you call `$c['app']->render` method like below:
+
+If you want to use Twig as a template engine, you call `$container['tpl']->render` method like below:
 
     <?php
-    $now = date('Y-m-d H:i:s');
-    return $c['tpl']->render('hello.html', array('now' => $now));
+    return function($request, $params, $container) {
+        $now = date('Y-m-d H:i:s');
+        return $container['tpl']->render('hello.html', array('now' => $now, 'name' => $params['name']));
+    };
 
 if you don't use Twig, Twig object is not created so it is very eco system.
 

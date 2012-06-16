@@ -1,2 +1,8 @@
 <?php
-return sprintf("<h1>not found</h1> <pre>%s</pre>", $e);
+return function($request, $params, $container) {
+  $error = $container['error']->getMessage();
+  if ($container['debug']) {
+    $error .= "<pre>" . print_r($container['error'], true) . "</pre>";
+  }
+  return $error;
+};

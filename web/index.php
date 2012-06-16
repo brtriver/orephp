@@ -11,4 +11,5 @@ $app->c['tpl'] = $app->c->share(function($c){
                                   'cache' => $c['cache_dir'],
                                   ));
   });
+// $app->c['debug'] = true;
 $app->display();

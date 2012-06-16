@@ -23,6 +23,7 @@ class Framework
   public function setDefaultParameters()
   {
     $this->c = new \Pimple();
+    $this->c['debug'] = false;
     $this->c['context'] = function() {
       return new RequestContext($_SERVER['REQUEST_URI']);
     };
@@ -36,7 +37,29 @@ class Framework
    */
   public function getResponse()
   {
-    if (file_exists($this->c['matcher'])) {
+    $router = $this->getRouter();
+    $request = Request::createFromGlobals();
+    try{
+      $params = $router->match($request->getPathInfo());
+      $controllerFilePath = $this->c['base_dir'] . '/app/controllers/' . $params['controller'] . ".php";
+      if (!file_exists($controllerFilePath)) {
+        throw new ResourceNotFoundException(sprintf("%s.php is not found", $params['controller']));
+      }
+      require $controllerFilePath;
+      $func = include $controllerFilePath;
+    } catch (ResourceNotFoundException $e) {
+      $params = (isset($params))? $params: array();
+      $func = include $this->c['base_dir'] . '/app/controllers/404.php';
+      $this->c['error'] = $e;
+    }
+    return $func($request, $params, $this->c);
+  }
+  /**
+   * get router
+   */
+  public function getRouter()
+  {
+    if (file_exists($this->c['matcher']) || $this->c['debug'] === true) {
       require $this->c['matcher'];
       $router = new \ProjectUrlMatcher($this->c['context']);
     } else {
@@ -48,21 +71,7 @@ class Framework
         $this->c['context']
         );
     }
-    $request = Request::createFromGlobals();
-
-    try{
-      extract($router->match($request->getPathInfo()), EXTR_SKIP);
-      $c = $this->c;
-      $controllerFilePath = $this->c['base_dir'] . '/app/controllers/' .$controller . ".php";
-      if (!file_exists($controllerFilePath)) {
-        throw new ResourceNotFoundException(sprintf("%s.php is not found", $controller));
-      }
-      $response = include $controllerFilePath;
-      return $response;
-    } catch (ResourceNotFoundException $e) {
-      $response = include $this->c['base_dir'] . '/app/controllers/404.php';
-      return $response;
-    }
+    return $router;
   }
   /**
    * get response and display
